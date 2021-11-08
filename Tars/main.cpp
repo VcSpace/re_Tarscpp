@@ -18,8 +18,8 @@ int main(int argc, char **argv)
 
     tars::NetThread vnet;
     vnet.bind(ip, port);
-    vnet->createEpoll(1);
-
+    vnet.createEpoll(1);
+    vnet.run();
 
     std::cout << "tars end" << std::endl;
 
