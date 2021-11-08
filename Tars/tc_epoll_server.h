@@ -10,7 +10,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <fcntl.h>
-
+#include <list>
 
 #include "tc_epoller.h"
 
@@ -19,18 +19,38 @@ namespace tars
     class NetThread
     {
     public:
+        enum
+        {
+            ET_LISTEN = 1,
+            ET_CLOSE  = 2,
+            ET_NOTIFY = 3,
+            ET_NET    = 0,
+        };
+
         NetThread();
         ~NetThread();
         void bind(std::string &ip, int port);
-        //void createepoll(1);
         void run();
         void parseAddr(const std::string &ip, struct in_addr &seraddr);
         void createEpoll(uint32_t iIndex= 0);
+        void accept(int fd);
+
+        struct
+        {
+            std::string response;
+            uint32_t uid;
+        }_response;
 
     private:
-        TC_Epoller _epoller;
-        int _sock;
 
+        TC_Epoller _epoller;
+
+        std::list<uint32_t> _free;
+        volatile size_t _free_size;
+
+        int _sock;
+        int _shutdown_sock;
+        int _notify_sock;
     };
 }
 

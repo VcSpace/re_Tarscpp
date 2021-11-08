@@ -2,9 +2,24 @@
 
 namespace tars
 {
+    #define H64(x) (((uint64_t)x) << 32)
+
     NetThread::NetThread()
     {
-        _sock
+        _shutdown_sock = socket(AF_INET, SOCK_STREAM, 0);
+        _notify_sock = socket(AF_INET, SOCK_STREAM, 0);
+
+        if(_shutdown_sock < 0)
+        {
+            std::cout << "_shutdown_sock  invalid" << std::endl;
+        }
+
+        if(_notify_sock < 0)
+        {
+            std::cout << "_notify_sock invalid" << std::endl;
+        }
+        _response.response="";
+        _response.uid = 0;
     }
 
     NetThread::~NetThread() {}
@@ -92,7 +107,6 @@ namespace tars
         {
             ;
         }
-
     }
 
     void NetThread::parseAddr(const std::string &ip, struct in_addr &seraddr)
@@ -128,9 +142,7 @@ namespace tars
             {
                 seraddr = *(struct in_addr *) pstHostent->h_addr;
             }
-
         }
-
     }
 
     void NetThread::createEpoll(uint32_t iIndex)
@@ -138,5 +150,66 @@ namespace tars
         int _total = 200000;
 
         _epoller.create(10240);
+
+        _epoller.add(_shutdown_sock, H64(ET_CLOSE), EPOLLIN);
+
+        _epoller.add(_notify_sock, H64(ET_NOTIFY), EPOLLIN);
+
+        _epoller.add(_sock, H64(ET_LISTEN) | _sock, EPOLLIN);
+
+        for(uint32_t i = 1; i <= _total; i++)
+        {
+            _free.push_back(i);
+        }
+
+        _free_size = _total;
+
+        std::cout << "epoll create successful" << std::endl;
+    }
+
+    void NetThread::run()
+    {
+        std::cout << "NetThread run" << std::endl;
+
+        while(true)
+        {
+            int iEvNum = _epoller.wait(2000);
+            for(int i = 0; i < iEvNum; ++i)
+            {
+                const epoll_event &ev = _epoller.get(i);
+
+                uint32_t h = ev.data.u64 >> 32;
+
+                switch(h)
+                {
+                    case ET_LISTEN:
+                        std::cout << "ET_LISTEN" << std::endl;
+                        {
+                            if(ev.events & EPOLLIN)
+                            {
+                                bool ret;
+                                do
+                                {
+                                    ret = accept(ev.data.u32);
+                                }while(ret);
+                            }
+                        }
+                        break;
+                    case ET_CLOSE:
+                        std::cout << "ET_CLOSE" << std::endl;
+                        break;
+                    case ET_NOTIFY:
+                        std::cout << "ET_NOTIFY" << std::endl;
+                        processPipe();
+                        break;
+                    case ET_NET:
+                        std::cout << "ET_NET" << std::endl;
+                        processNet(ev);
+                        break;
+                    default:
+                        assert(true);
+                }
+            }
+        }
     }
 }
