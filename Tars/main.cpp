@@ -6,6 +6,7 @@
 
 int main(int argc, char **argv)
 {
+    std::cout << "main start" << std::endl;
     int port = 20999;
     std::string ip = "";
 
@@ -15,8 +16,12 @@ int main(int argc, char **argv)
         ip = argv[2];
     }
 
-    tars::NetThread vnetThread = new tars::NetThread();
+    tars::NetThread vnet;
+    vnet.bind(ip, port);
+    vnet->createEpoll(1);
 
+
+    std::cout << "tars end" << std::endl;
 
     return 0;
 }
