@@ -12,6 +12,13 @@ namespace tars
         TC_Epoller(bool bET = true);
         ~TC_Epoller();
         void create(int max_connections);
+        void ctrl(int fd, long long data, __uint32_t event, int op);
+        void add(int fd, long long data, __uint32_t event);
+        void mod(int fd, long long data, __uint32_t event);
+        void del(int fd, long long data, __uint32_t event);
+        int wait(int millsecond);
+
+        struct epoll_event& get(int i) { assert(_pevs != 0); return _pevs[i]; }
 
     private:
         int _iEpollfd;
