@@ -11,6 +11,7 @@
 #include <netinet/tcp.h>
 #include <fcntl.h>
 #include <list>
+#include <map>
 
 #include "tc_epoller.h"
 
@@ -27,27 +28,32 @@ namespace tars
             ET_NET    = 0,
         };
 
-        NetThread();
-        ~NetThread();
-        void bind(std::string &ip, int port);
-        void run();
-        void parseAddr(const std::string &ip, struct in_addr &seraddr);
-        void createEpoll(uint32_t iIndex= 0);
-        void accept(int fd);
-
         struct
         {
             std::string response;
             uint32_t uid;
         }_response;
 
-    private:
+        NetThread();
+        ~NetThread();
+        void bind(std::string &ip, int port);
+        void run();
+        void parseAddr(const std::string &ip, struct in_addr &seraddr);
+        void createEpoll(uint32_t iIndex= 0);
+        void processPipe();
+        void processNet(const struct epoll_event &ev);
 
+        bool accept(int fd);
+
+    private:
         TC_Epoller _epoller;
 
         std::list<uint32_t> _free;
         volatile size_t _free_size;
+        std::map<int,int> _listen_connect_id;
 
+        std::string _recvbuffer;
+        int ifd;
         int _sock;
         int _shutdown_sock;
         int _notify_sock;

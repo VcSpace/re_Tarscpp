@@ -160,11 +160,162 @@ namespace tars
         for(uint32_t i = 1; i <= _total; i++)
         {
             _free.push_back(i);
+            ++_free_size;
         }
 
-        _free_size = _total;
 
         std::cout << "epoll create successful" << std::endl;
+    }
+
+    bool NetThread::accept(int fd)
+    {
+        struct sockaddr_in client_addr;
+        socklen_t client_addr_len = sizeof(client_addr);
+
+        int iifd;
+        while((iifd = ::accept(_sock, (struct sockaddr *) &client_addr, &client_addr_len)) < 0 && errno == EINTR);
+
+        std::cout << "server accept successful fd is " << iifd << std::endl;
+        if(iifd < 0)
+        {
+            return false;
+        }
+        else
+        {
+            std::string ip;
+            uint16_t port;
+            char sAddr[INET_ADDRSTRLEN] = "\0";
+
+            struct sockaddr_in *p = (struct sockaddr_in *) &client_addr;
+
+            inet_ntop(AF_INET, &p->sin_addr, sAddr, sizeof(sAddr));
+
+            ip = sAddr;
+            port = ntohs(p->sin_port);
+
+            //setblock
+            int val = 0;
+            int bBlock = false;
+            if ((val = fcntl(iifd, F_GETFL, 0)) == -1) {
+                std::cout << "F_GETFL error" << std::endl;
+            }
+
+            if (!bBlock) {
+                val |= O_NONBLOCK;
+            } else {
+                val &= ~O_NONBLOCK;
+            }
+
+            if (fcntl(iifd, F_SETFL, val) == -1) {
+                std::cout << "F_SETFL error" << std::endl;
+            }
+
+            //keepAlive
+            int flag = 1;
+            if (setsockopt(iifd, SOL_SOCKET, SO_KEEPALIVE, (char *) &flag, int(sizeof(int))) == -1) {
+                std::cout << "[TC_Socket::setKeepAlive] error" << std::endl;
+            }
+
+            //nodelay
+            if (setsockopt(iifd, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, int(sizeof(int))) == -1) {
+                std::cout << "[TC_Socket::setTcpNoDelay] error" << std::endl;
+            }
+
+            //closeWait
+            linger stLinger;
+            stLinger.l_onoff = 0;
+            stLinger.l_linger = 0;
+
+            if (setsockopt(iifd, SOL_SOCKET, SO_LINGER, (const void *) &stLinger, sizeof(linger)) == -1) {
+                std::cout << "[TC_Socket::setCloseWaitDefault] error" << std::endl;
+            }
+
+            uint32_t uid = _free.front();
+
+            _free.pop_front();
+
+            --_free_size;
+
+            //保存connectid
+            _listen_connect_id[uid] = iifd;
+
+            //注册到epoll模型
+            _epoller.add(iifd, uid, EPOLLIN | EPOLLOUT);
+            return true;
+        }
+    }
+
+    void NetThread::processPipe()
+    {
+        uint32_t uid = _response.uid;
+
+        int fd = _listen_connect_id[uid];
+
+        std::cout << "processPipe uid is " << uid << " fd is " << fd << std::endl;
+
+        int bytes = ::send(fd, _response.response.c_str(), _response.response.size(), 0);
+
+        std::cout << "send byte is " << bytes << std::endl;
+        std::cout << "response is " << _response.response << std::endl;
+    }
+
+    void NetThread::processNet(const epoll_event &ev)
+    {
+        uint32_t uid = ev.data.u32;
+
+        int fd = _listen_connect_id[uid];
+
+        std::cout << "processNet uid is " << uid << " fd is " << fd << std::endl;
+
+        if (ev.events & EPOLLERR || ev.events & EPOLLHUP)
+        {
+            std::cout << "should delete connection" << std::endl;
+            return;
+        }
+
+        if(ev.events & EPOLLIN)
+        {
+            while(true)
+            {
+                char buffer[32 * 1024];
+                int iBytesReceived = 0;
+
+                iBytesReceived = ::read(fd, (void*)buffer, sizeof(buffer));
+                std::cout << "server recieve " << iBytesReceived << " bytes buffer is " << buffer << std::endl;
+
+                if(iBytesReceived < 0)
+                {
+                    if(errno == EAGAIN)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "client close" << std::endl;
+                        return;
+                    }
+                }
+                else if( iBytesReceived == 0 )
+                {
+                    std::cout << "1 client close" << std::endl;
+                    return;
+                }
+
+                _recvbuffer.append(buffer, iBytesReceived);
+
+                _response.response = "hello";
+                _response.uid = uid;
+
+                _epoller.mod(_notify_sock, H64(ET_NOTIFY), EPOLLOUT);
+
+            }
+
+            if (ev.events & EPOLLOUT)
+            {
+                //这里是处理上次未发送完的数据
+                std::cout << "need to send data" << std::endl;
+            }
+        }
     }
 
     void NetThread::run()
