@@ -47,17 +47,17 @@ namespace tars
 
     void TC_Epoller::add(int fd, long long data, __uint32_t event) //_sock, h64(close), EPOLLIN
     {
-        crrl(fd, data, event, EPOLL_CTL_ADD);
+        ctrl(fd, data, event, EPOLL_CTL_ADD);
     }
 
     void TC_Epoller::mod(int fd, long long data, __uint32_t event)
     {
-        crrl(fd, data, event, EPOLL_CTL_MOD);
+        ctrl(fd, data, event, EPOLL_CTL_MOD);
     }
 
     void TC_Epoller::del(int fd, long long data, __uint32_t event)
     {
-        crrl(fd, data, event, EPOLL_CTL_DEL);
+        ctrl(fd, data, event, EPOLL_CTL_DEL);
     }
 
     int TC_Epoller::wait(int millsecond)
