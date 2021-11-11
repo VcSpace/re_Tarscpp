@@ -14,6 +14,7 @@
 #include <map>
 
 #include "tc_epoller.h"
+#include "tc_socket.h"
 
 namespace tars
 {
@@ -46,17 +47,19 @@ namespace tars
         bool accept(int fd);
 
     private:
-        TC_Epoller _epoller;
-
         std::list<uint32_t> _free;
-        volatile size_t _free_size;
         std::map<int,int> _listen_connect_id;
 
         std::string _recvbuffer;
+
         int ifd;
-        int _sock;
-        int _shutdown_sock;
-        int _notify_sock;
+        volatile size_t _free_size;
+
+        TC_Socket _shutdown;
+        TC_Socket _notify;
+        TC_Socket _bind_listen;
+
+        TC_Epoller _epoller;
     };
 }
 

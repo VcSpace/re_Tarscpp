@@ -6,18 +6,9 @@ namespace tars
 
     NetThread::NetThread()
     {
-        _shutdown_sock = socket(AF_INET, SOCK_STREAM, 0);
-        _notify_sock = socket(AF_INET, SOCK_STREAM, 0);
+        _shutdown.createSocket();
+        _notify.createSocket();
 
-        if(_shutdown_sock < 0)
-        {
-            std::cout << "_shutdown_sock  invalid" << std::endl;
-        }
-
-        if(_notify_sock < 0)
-        {
-            std::cout << "_notify_sock invalid" << std::endl;
-        }
         _response.response="";
         _response.uid = 0;
     }
@@ -29,12 +20,10 @@ namespace tars
         int iSocketType = SOCK_STREAM;
         int iDomain = AF_INET;
 
-        _sock = socket(AF_INET, SOCK_STREAM, 0);
+        _bind_listen.createSocket(AF_INET, SOCK_STREAM);
+        _bind_listen.bind(ip,port);
+        _bind_listen.listen(1024);
 
-        if(_sock < 0)
-        {
-            std::cerr << "bind _sock faild" << std::endl;
-        }
 
         struct sockaddr_in addr;
         bzero(&addr, sizeof(addr));
