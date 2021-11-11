@@ -35,7 +35,7 @@ namespace tars
         }_response;
 
         NetThread();
-        ~NetThread();
+        virtual ~NetThread();
         void bind(std::string &ip, int port);
         void run();
         void parseAddr(const std::string &ip, struct in_addr &seraddr);
