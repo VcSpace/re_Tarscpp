@@ -31,7 +31,6 @@ namespace tars
         virtual ~NetThread();
         void bind(std::string &ip, int port);
         void run();
-        void parseAddr(const std::string &ip, struct in_addr &seraddr);
         void createEpoll(uint32_t iIndex= 0);
         void processPipe();
         void processNet(const struct epoll_event &ev);
