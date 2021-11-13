@@ -1,15 +1,7 @@
 #ifndef LEARN_TARSCPP_TC_EPOLL_SERVER_H
 #define LEARN_TARSCPP_TC_EPOLL_SERVER_H
 
-#include <iostream>
 #include <cstring>
-#include <cstdlib>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <fcntl.h>
 #include <list>
 #include <map>
 
