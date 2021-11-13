@@ -15,6 +15,7 @@ namespace tars
         void close();
         void bind(const std::string &ip, int port);
         void listen(int connBackLog);
+        void parseAddr(const std::string &ip, struct in_addr &seraddr);
 
     private:
         static const int INVALID_SOCKET = -1;

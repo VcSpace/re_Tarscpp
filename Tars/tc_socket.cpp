@@ -42,9 +42,25 @@ namespace tars
         struct sockaddr_in saddr;
         bzero(&saddr, sizeof(saddr));
 
+        saddr.sin_family = _iDomain;
+        saddr.sin_port = htons(port);
+
+        if(ip == " ")
+        {
+            saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        }
+        else
+        {
+            parseAddr(ip, saddr.sin_addr);
+        }
     }
 
     void TC_Socket::listen(int connBackLog)
+    {
+
+    }
+
+    void TC_Socket::parseAddr(const std::string &ip, struct in_addr &seraddr)
     {
 
     }
