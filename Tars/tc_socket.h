@@ -1,9 +1,7 @@
 #ifndef TARS_V_TC_SOCKET_H
 #define TARS_V_TC_SOCKET_H
 
-#include <iostream>
-#include <unistd.h>
-#include <sys/socket.h>
+#include "socket.h"
 
 namespace tars
 {
