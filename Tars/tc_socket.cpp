@@ -36,7 +36,6 @@ namespace tars
         }
     }
 
-
     void TC_Socket::bind(const std::string &ip, int port)
     {
         struct sockaddr_in saddr;
@@ -64,15 +63,25 @@ namespace tars
         }
     }
 
-    void TC_Socket::bind(struct sockaddr &addr, int socklen)
+    void TC_Socket::bind(struct sockaddr *addr, socklen_t socklen)
     {
+        //如果服务器终止后,服务器可以第二次快速启动而不用等待一段时间
+        int iReuseAddr = 1;
 
+        //设置
+        setSockOpt(SO_REUSEADDR, (const void *)&iReuseAddr, sizeof(int), SOL_SOCKET);
+
+        if(::bind(_sock, addr, socklen) < 0)
+        {
+            std::cout << "[TC_Socket::bind] bind error" << std::endl;
+        }
     }
 
-    void TC_Socket::listen(int connBackLog)
+    int TC_Socket::setSockOpt(int opt, const void *pvOptVal, socklen_t optLen, int level)
     {
-
+        return setsockopt(_sock, level, opt, pvOptVal, optLen);
     }
+
 
     void TC_Socket::parseAddr(const std::string &ip, struct in_addr &seraddr)
     {
@@ -103,4 +112,11 @@ namespace tars
         }
     }
 
+    void TC_Socket::listen(int iConnBackLog)
+    {
+        if (::listen(_sock, iConnBackLog) < 0)
+        {
+            std::cout << "[TC_Socket::listen] listen error" << std::endl;
+        }
+    }
 }
