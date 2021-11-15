@@ -53,6 +53,20 @@ namespace tars
         {
             parseAddr(ip, saddr.sin_addr);
         }
+
+        try
+        {
+            bind((struct sockaddr *)(&saddr), sizeof(saddr));
+        }
+        catch(...)
+        {
+            std::cout << "[TC_Socket::bind] bind error" << std::endl;
+        }
+    }
+
+    void TC_Socket::bind(struct sockaddr &addr, int socklen)
+    {
+
     }
 
     void TC_Socket::listen(int connBackLog)
@@ -62,7 +76,31 @@ namespace tars
 
     void TC_Socket::parseAddr(const std::string &ip, struct in_addr &seraddr)
     {
+        int iRet = inet_pton(AF_INET, ip.c_str(), &seraddr);
+        if(iRet < 0)
+        {
+            std::cout << "[TC_Socket::parseAddr] inet_pton error" << std::endl;;
+        }
+        else if(iRet == 0)
+        {
+            struct hostent stHostent;
+            struct hostent *pstHostent;
 
+            char buf[2048] = "\0";
+            int iError;
+
+            gethostbyname_r(ip.c_str(), &stHostent, buf, sizeof(buf), &pstHostent, &iError);
+
+            if(pstHostent == nullptr)
+            {
+                std::cout << "[TC_Socket::parseAddr] gethostbyname_r error! :" << std::endl;
+
+            }
+            else
+            {
+                seraddr = *(struct in_addr *)pstHostent->h_addr;
+            }
+        }
     }
 
 }

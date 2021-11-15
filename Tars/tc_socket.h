@@ -13,6 +13,7 @@ namespace tars
 
         void createSocket(int iSocketType = SOCK_STREAM, int iDomain = AF_INET);
         void close();
+        void bind(struct sockaddr& addr, int socklen);
         void bind(const std::string &ip, int port);
         void listen(int connBackLog);
         void parseAddr(const std::string &ip, struct in_addr &seraddr);
