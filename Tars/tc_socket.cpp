@@ -103,7 +103,6 @@ namespace tars
             if(pstHostent == nullptr)
             {
                 std::cout << "[TC_Socket::parseAddr] gethostbyname_r error! :" << std::endl;
-
             }
             else
             {
@@ -119,4 +118,67 @@ namespace tars
             std::cout << "[TC_Socket::listen] listen error" << std::endl;
         }
     }
+
+    void TC_Socket::setKeepAlive()
+    {
+        int flag = 1;
+        if(setSockOpt(SO_KEEPALIVE, (char*)&flag, int(sizeof(int)), SOL_SOCKET) == -1)
+        {
+            std::cout << "[TC_Socket::setKeepAlive] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setTcpNoDelay()
+    {
+        int flag = 1;
+
+        if(setSockOpt(TCP_NODELAY, (char*)&flag, int(sizeof(int)), IPPROTO_TCP) == -1)
+        {
+            std::cout << "[TC_Socket::setTcpNoDelay] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setNoCloseWait()
+    {
+        linger stLinger;
+        stLinger.l_onoff = 1;  //在close socket调用后, 但是还有数据没发送完毕的时候容许逗留
+        stLinger.l_linger = 0; //容许逗留的时间为0秒
+
+        if(setSockOpt(SO_LINGER, (const void *)&stLinger, sizeof(linger), SOL_SOCKET) == -1)
+        {
+            std::cout << "[TC_Socket::setNoCloseWait] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setblock(bool bBlock)
+    {
+        assert(_sock != INVALID_SOCKET);
+
+        setblock(_sock, bBlock);
+    }
+
+    void TC_Socket::setblock(int fd, bool bBlock)
+    {
+        int val = 0;
+
+        if ((val = fcntl(fd, F_GETFL, 0)) == -1)
+        {
+            std::cout << "[TC_Socket::setblock] fcntl [F_GETFL] error" << std::endl;
+        }
+
+        if(!bBlock)
+        {
+            val |= O_NONBLOCK;
+        }
+        else
+        {
+            val &= ~O_NONBLOCK;
+        }
+
+        if (fcntl(fd, F_SETFL, val) == -1)
+        {
+            std::cout << "[TC_Socket::setblock] fcntl [F_SETFL] error" << std::endl;
+        }
+    }
+
 }
