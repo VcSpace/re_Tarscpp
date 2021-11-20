@@ -29,13 +29,11 @@ namespace tars
 
         NetThread();
         virtual ~NetThread();
-        void bind(std::string &ip, int port);
         void run();
         void createEpoll(uint32_t iIndex= 0);
         void processPipe();
-        void processNet(const struct epoll_event &ev);
 
-        bool accept(int fd);
+        int bind(std::string &ip, int port);
 
     private:
         std::list<uint32_t> _free;
