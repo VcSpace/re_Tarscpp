@@ -14,6 +14,7 @@ namespace tars
         void add(int fd, long long data, __uint32_t event);
         void mod(int fd, long long data, __uint32_t event);
         void del(int fd, long long data, __uint32_t event);
+
         int wait(int millsecond);
 
         struct epoll_event& get(int i) { assert(_pevs != 0); return _pevs[i]; }
