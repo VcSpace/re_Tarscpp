@@ -181,4 +181,42 @@ namespace tars
         }
     }
 
+    void TC_Socket::init(int _fd, bool bOwner, int iDomain)
+    {
+        if(_bOwner)
+        {
+            close();
+        }
+
+        _sock = _fd;
+        _bOwner = bOwner;
+        _iDomain = iDomain;
+    }
+
+    int TC_Socket::accept(TC_Socket &tcSock, struct sockaddr *pstSockAddr, socklen_t &iSockLen)
+    {
+        assert(tcSock._sock == INVALID_SOCKET);
+
+        int ifd;
+
+        while((ifd = ::accept(_sock, pstSockAddr, &iSockLen)) < 0 && errno == EINTR);
+
+        tcSock._sock    = ifd;
+        tcSock._iDomain = _iDomain;
+
+        return tcSock._sock;
+    }
+
+    void TC_Socket::setCloseWaitDefault()
+    {
+        linger stLinger;
+        stLinger.l_onoff  = 0;
+        stLinger.l_linger = 0;
+
+        if(setSockOpt(SO_LINGER, (const void *)&stLinger, sizeof(linger), SOL_SOCKET) == -1)
+        {
+            std::cout << "[TC_Socket::setCloseWaitDefault] error" << std::endl;
+        }
+    }
+
 }
