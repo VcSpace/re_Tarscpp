@@ -32,8 +32,11 @@ namespace tars
         void run();
         void createEpoll(uint32_t iIndex= 0);
         void processPipe();
+        void processNet(const epoll_event &ev);
 
         int bind(std::string &ip, int port);
+
+        bool accept(int fd);
 
     private:
         std::list<uint32_t> _free;
