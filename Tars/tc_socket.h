@@ -1,7 +1,21 @@
 #ifndef TARS_V_TC_SOCKET_H
 #define TARS_V_TC_SOCKET_H
 
-#include "socket.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <vector>
+#include <string>
+#include <sys/un.h>
+#include <iostream>
+#include <cassert>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <netinet/tcp.h>
+
 
 namespace tars
 {

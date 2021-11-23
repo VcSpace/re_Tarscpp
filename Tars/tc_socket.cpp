@@ -44,7 +44,7 @@ namespace tars
         saddr.sin_family = _iDomain;
         saddr.sin_port = htons(port);
 
-        if(ip == " ")
+        if(ip == "")
         {
             saddr.sin_addr.s_addr = htonl(INADDR_ANY);
         }
