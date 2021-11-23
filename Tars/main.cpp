@@ -7,13 +7,12 @@
 int main(int argc, char **argv)
 {
     std::cout << "main start" << std::endl;
-    int port = 20999;
+    int port = 20229;
     std::string ip = "";
 
     if(argc > 2)
     {
-        port = atoi(argv[1]);
-        ip = argv[2];
+        ip = argv[1];
     }
 
     tars::NetThread vnet;
