@@ -1,9 +1,12 @@
 #ifndef LEARN_TARSCPP_TC_EPOLL_SERVER_H
 #define LEARN_TARSCPP_TC_EPOLL_SERVER_H
 
-#include <cstring>
-#include <list>
+#include <iostream>
+#include <string>
+#include <vector>
 #include <map>
+#include <list>
+#include <netinet/in.h>
 
 #include "tc_epoller.h"
 #include "tc_socket.h"
@@ -43,6 +46,7 @@ namespace tars
         std::map<int,int> _listen_connect_id;
 
         std::string _recvbuffer;
+        std::string                    response;
 
         int ifd;
         volatile size_t _free_size;

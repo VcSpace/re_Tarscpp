@@ -1,5 +1,21 @@
 #include "tc_epoll_server.h"
 
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <cerrno>
+#include <cassert>
+#include <ifaddrs.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+
 namespace tars
 {
     #define H64(x) (((uint64_t)x) << 32)
@@ -63,14 +79,13 @@ namespace tars
             for(int i = 0; i < iEvNum; ++i)
             {
                 const epoll_event &ev = _epoller.get(i);
-
                 uint32_t h = ev.data.u64 >> 32;
 
                 switch(h)
                 {
                     case ET_LISTEN:
                         std::cout << "ET_LISTEN" << std::endl;
-                        if(ev.events. & EPOLLIN)
+                        if(ev.events & EPOLLIN)
                         {
                             bool ret = false;
 
@@ -204,5 +219,15 @@ namespace tars
 
             _epoller.add(cs.getfd(), uid, EPOLLIN | EPOLLOUT);
         }
+        else
+        {
+            if(errno == EAGAIN)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        return true;
     }
 }
