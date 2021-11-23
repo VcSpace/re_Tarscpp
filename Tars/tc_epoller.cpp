@@ -17,7 +17,7 @@ namespace tars
 
         if(_iEpollfd > 0)
         {
-            close(_iEpollfd);
+            ::close(_iEpollfd);
         }
     }
 

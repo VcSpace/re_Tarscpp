@@ -1,7 +1,9 @@
 #ifndef LEARN_TARSCPP_TC_EPOLLER_H
 #define LEARN_TARSCPP_TC_EPOLLER_H
 
-#include "socket.h"
+#include <sys/epoll.h>
+#include <unistd.h>
+#include <cassert>
 
 namespace tars
 {
@@ -14,6 +16,7 @@ namespace tars
         void add(int fd, long long data, __uint32_t event);
         void mod(int fd, long long data, __uint32_t event);
         void del(int fd, long long data, __uint32_t event);
+        void close();
 
         int wait(int millsecond);
 
