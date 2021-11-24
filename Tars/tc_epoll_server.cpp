@@ -1,21 +1,5 @@
 #include "tc_epoll_server.h"
 
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <cerrno>
-#include <cassert>
-#include <ifaddrs.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/epoll.h>
-
 namespace tars
 {
     #define H64(x) (((uint64_t)x) << 32)
@@ -34,12 +18,11 @@ namespace tars
 
     }
 
-    int NetThread::bind(std::string &ip, int port)
+    int NetThread::bind(std::string &ip, int &port)
     {
-        int iSocketType = SOCK_STREAM;
         int iDomain = AF_INET;
 
-        _bind_listen.createSocket(AF_INET, SOCK_STREAM);
+        _bind_listen.createSocket(SOCK_STREAM, iDomain);
         _bind_listen.bind(ip,port);
         _bind_listen.listen(1024);
         std::cout << "server alreay listen fd is " << _bind_listen.getfd() << std::endl;
@@ -55,8 +38,15 @@ namespace tars
 
     void NetThread::createEpoll(uint32_t iIndex)
     {
-        int _total = 20000;
+        int _total = 200000;
+
         _epoller.create(10240);
+
+        _epoller.add(_shutdown.getfd(), H64(ET_CLOSE), EPOLLIN);
+
+        _epoller.add(_notify.getfd(), H64(ET_NOTIFY), EPOLLIN);
+
+        _epoller.add(_bind_listen.getfd(), H64(ET_LISTEN) | _bind_listen.getfd(), EPOLLIN);
 
         for(uint32_t i = 1; i <= _total; i++)
         {
@@ -65,7 +55,7 @@ namespace tars
             ++_free_size;
         }
 
-        std::cout << "epoll create successful" << std::endl;
+        cout<<"epoll create successful"<<endl;
     }
 
     void NetThread::run()

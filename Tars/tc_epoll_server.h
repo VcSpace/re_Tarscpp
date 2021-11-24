@@ -1,21 +1,38 @@
 #ifndef LEARN_TARSCPP_TC_EPOLL_SERVER_H
 #define LEARN_TARSCPP_TC_EPOLL_SERVER_H
 
-#include <iostream>
-#include <string>
 #include <vector>
 #include <map>
 #include <list>
-#include <netinet/in.h>
 
-#include "tc_epoller.h"
 #include "tc_socket.h"
+#include "tc_epoller.h"
+
+using namespace std;
 
 namespace tars
 {
+
     class NetThread
     {
     public:
+
+        NetThread();
+
+        virtual ~NetThread();
+
+        int bind(string& ip, int& port);
+
+        void run();
+
+        void createEpoll(uint32_t iIndex = 0);
+
+        bool accept(int fd);
+
+        void processNet(const epoll_event &ev);
+
+        void processPipe();
+
         enum
         {
             ET_LISTEN = 1,
@@ -26,37 +43,30 @@ namespace tars
 
         struct
         {
-            std::string response;
+            string response;
             uint32_t uid;
         }_response;
 
-        NetThread();
-        virtual ~NetThread();
-        void run();
-        void createEpoll(uint32_t iIndex= 0);
-        void processPipe();
-        void processNet(const epoll_event &ev);
-
-        int bind(std::string &ip, int port);
-
-        bool accept(int fd);
-
     private:
-        std::list<uint32_t> _free;
-        std::map<int,int> _listen_connect_id;
 
-        std::string _recvbuffer;
-        std::string                    response;
+        TC_Socket                 _shutdown;
+        TC_Socket                 _notify;
 
-        int ifd;
-        volatile size_t _free_size;
+        TC_Socket                 _bind_listen;
 
-        TC_Socket _shutdown;
-        TC_Socket _notify;
-        TC_Socket _bind_listen;
+        TC_Epoller                _epoller;
 
-        TC_Epoller _epoller;
+        string                    _recvbuffer;
+
+        string                    response;
+
+        map<int,int>              _listen_connect_id;
+
+        list<uint32_t>            _free;
+
+        volatile size_t           _free_size;
     };
+
 }
 
 #endif //LEARN_TARSCPP_TC_EPOLL_SERVER_H
