@@ -12,6 +12,8 @@
 #include <netdb.h>
 #include <cstdlib>
 #include <cassert>
+#include <cstring>
+#include <sys/types.h>
 
 namespace tars
 {
