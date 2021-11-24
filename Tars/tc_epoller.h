@@ -1,9 +1,7 @@
 #ifndef LEARN_TARSCPP_TC_EPOLLER_H
 #define LEARN_TARSCPP_TC_EPOLLER_H
 
-#include <sys/epoll.h>
-#include <unistd.h>
-#include <cassert>
+#include "socket.h"
 
 namespace tars
 {
