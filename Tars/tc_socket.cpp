@@ -9,7 +9,10 @@ namespace tars
 
     TC_Socket::~TC_Socket()
     {
-
+        if(_bOwner)
+        {
+            close();
+        }
     }
 
     void TC_Socket::close()
@@ -32,12 +35,14 @@ namespace tars
         if(_sock < 0)
         {
             _sock = INVALID_SOCKET;
-            std::cout << "create sock error " << std::endl;
+            std::cout << "create sock error" << std::endl;
         }
     }
 
     void TC_Socket::bind(const std::string &ip, int port)
     {
+        _iDomain == AF_INET;
+
         struct sockaddr_in saddr;
         bzero(&saddr, sizeof(saddr));
 
@@ -181,14 +186,14 @@ namespace tars
         }
     }
 
-    void TC_Socket::init(int _fd, bool bOwner, int iDomain)
+    void TC_Socket::init(int fd, bool bOwner, int iDomain)
     {
         if(_bOwner)
         {
             close();
         }
 
-        _sock = _fd;
+        _sock = fd;
         _bOwner = bOwner;
         _iDomain = iDomain;
     }

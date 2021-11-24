@@ -1,21 +1,7 @@
 #ifndef TARS_V_TC_SOCKET_H
 #define TARS_V_TC_SOCKET_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <vector>
-#include <string>
-#include <sys/un.h>
-#include <iostream>
-#include <cassert>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <netinet/tcp.h>
-
+#include "socket.h"
 
 namespace tars
 {
@@ -25,6 +11,7 @@ namespace tars
         TC_Socket();
         virtual ~TC_Socket();
 
+        void init(int fd, bool bOwner, int iDomain = AF_INET);
         void createSocket(int iSocketType = SOCK_STREAM, int iDomain = AF_INET);
         void close();
         void bind(struct sockaddr *addr, socklen_t socklen);
@@ -38,7 +25,6 @@ namespace tars
         void setblock(bool block);
         void setblock(int fd, bool block);
         void setOwner(bool bOwner)  { _bOwner = bOwner; }
-        void init(int fd, bool bOwner, int iDomain = AF_INET);
 
         int setSockOpt(int opt, const void *pvOptVal, socklen_t optLen, int level = SOL_SOCKET);
         int getfd() const { return _sock; }
