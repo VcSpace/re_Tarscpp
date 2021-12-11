@@ -3,6 +3,7 @@
 
 
 #include "tc_socket.h"
+#include "tc_epoller.h"
 
 namespace tars
 {
@@ -15,10 +16,25 @@ namespace tars
         class NetThread
         {
         public:
+            enum
+            {
+                ET_LISTEN = 1,
+                ET_CLOSE  = 2,
+                ET_NOTIFY = 3,
+                ET_NET    = 0,
+            };
+
+            struct
+            {
+                std::string response;
+                uint32_t uid;
+            }_response;
+
             NetThread(TC_EpollServer *epollServer);
             virtual ~NetThread();
 
             void bind(std::string &ip, int port);
+            void createEpoll(uint32_t iIndex = 0);
 
         private:
             TC_EpollServer *_epollServer;
@@ -26,6 +42,8 @@ namespace tars
             TC_Socket _shutdown;
             TC_Socket _notify;
             TC_Socket _bind_listen;
+
+            TC_Epoller _epoller;
         };
 
     public:
