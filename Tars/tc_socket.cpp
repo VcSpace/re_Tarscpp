@@ -52,6 +52,27 @@ namespace tars
         } else{
             parseaddr(ip, serv_addr.sin_addr);
         }
+
+        try
+        {
+            bind((struct sockaddr*) &serv_addr, sizeof(serv_addr));
+        }
+        catch(...)
+        {
+            std::cout << "[TC_Socket::bind] bind error" << std::endl;
+        }
+    }
+
+    void TC_Socket::bind(struct sockaddr *s_addr, socklen_t s_addr_len)
+    {
+        int reuse = 1;
+
+        setSockOpt(SO_REUSEADDR, (const void *)&reuse, sizeof(int), SOL_SOCKET);
+
+        if(::bind(_sock, s_addr, s_addr_len))
+        {
+            std::cout << "[TC_Socket::bind] bind error" << std::endl;
+        }
     }
 
     void TC_Socket::parseaddr(const std::string &ip, struct in_addr &s_addr)
@@ -79,5 +100,79 @@ namespace tars
                 s_addr = *(struct in_addr *) pstHostent->h_addr;
             }
         }
+    }
+
+    int TC_Socket::setSockOpt(int opt, const void *pvOptVal, socklen_t optLen, int level) {
+        return setsockopt(_sock, level, opt, pvOptVal, optLen);
+    }
+
+    void TC_Socket::listen(int conn)
+    {
+        if(::listen(_sock, conn) < 0)
+        {
+            std::cout << "[TC_Socket::listen] listen error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setKeepAlive()
+    {
+        int flag = 1;
+        if(setSockOpt(SO_KEEPALIVE, (char *) &flag, int(sizeof(int)), SOL_SOCKET) == -1)
+        {
+            std::cout << "[TC_Socket::setKeepAlive] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setTcpNoDelay()
+    {
+        int flag = 1;
+
+        if(setSockOpt(TCP_NODELAY, (char*)&flag, int(sizeof(int)), IPPROTO_TCP) == -1)
+        {
+            std::cout << "[TC_Socket::setTcpNoDelay] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setNoCloseWait()
+    {
+        linger stLinger;
+        stLinger.l_onoff = 1;  //在close socket调用后, 但是还有数据没发送完毕的时候容许逗留
+        stLinger.l_linger = 0; //容许逗留的时间为0秒
+
+        if(setSockOpt(SO_LINGER, (const void *)&stLinger, sizeof(linger), SOL_SOCKET) == -1)
+        {
+            std::cout << "[TC_Socket::setNoCloseWait] error" << std::endl;
+        }
+    }
+
+    void TC_Socket::setblock(bool flag)
+    {
+        assert(_sock != INVALID_SOCKET);
+        setblock(_sock, flag);
+    }
+
+    void TC_Socket::setblock(int fd, bool flag)
+    {
+        int val = 0;
+
+        if((val = fcntl(fd, F_GETFL, 0)) == -1)
+        {
+            std::cout << "[TC_Socket::setblock] fcntl [F_GETFL] error" << std::endl;
+        }
+
+        if(!flag)
+        {
+            val |= O_NONBLOCK;
+        }
+        else
+        {
+            val &= ~O_NONBLOCK;
+        }
+
+        if(fcntl(fd, F_SETFL, val) == -1)
+        {
+            std::cout << "[TC_Socket::setblock] fcntl [F_SETFL] error" << std::endl;
+        }
+
     }
 }
