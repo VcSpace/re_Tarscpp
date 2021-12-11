@@ -20,6 +20,7 @@ int main(int argc, char **argv)
     tars::TC_EpollServer::NetThread* vNetThread = eserver->getNetThread();
 
     vNetThread->bind(ip,port);
+    vNetThread->createEpoll(1);
 
 
     std::cout << "close server " << std::endl;
