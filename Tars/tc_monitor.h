@@ -1,7 +1,7 @@
 #ifndef RETARS_TC_MONITOR_H
 #define RETARS_TC_MONITOR_H
 
-#include "tc_thread.h"
+#include "tc_thread_lock.h"
 
 namespace tars
 {
