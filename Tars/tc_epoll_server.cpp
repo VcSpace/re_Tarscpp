@@ -3,6 +3,7 @@
 
 namespace tars
 {
+#define H64(x) (((uint64_t)x) << 32)
     TC_EpollServer::TC_EpollServer()
     {
         _netThreads = new TC_EpollServer::NetThread(this);
@@ -43,6 +44,21 @@ namespace tars
     {
         int _total = 200000;
         _epoller.createepoll(10240);
+
+        _epoller.add(_shutdown.getfd(), H64(ET_CLOSE), EPOLLIN);
+
+        _epoller.add(_notify.getfd(), H64(ET_NOTIFY), EPOLLIN);
+
+        _epoller.add(_bind_listen.getfd(), H64(ET_LISTEN) | _bind_listen.getfd(), EPOLLIN);
+
+        for(uint32_t i = 1; i <= _total; i++)
+        {
+            _free.push_back(i);
+
+            ++_free_size;
+        }
+
+        std::cout << "epoll create successful" << std::endl;
     }
 
 }

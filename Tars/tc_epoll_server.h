@@ -1,9 +1,14 @@
 #ifndef TARS_V_TC_EPOLL_SERVER_H
 #define TARS_V_TC_EPOLL_SERVER_H
 
+#include <vector>
+#include <map>
+#include <list>
 
 #include "tc_socket.h"
 #include "tc_epoller.h"
+#include "tc_thread.h"
+#include "tc_monitor.h"
 
 namespace tars
 {
@@ -44,15 +49,23 @@ namespace tars
             TC_Socket _bind_listen;
 
             TC_Epoller _epoller;
+
+            std::map<int,int> _listen_connect_id;
+            std::list<uint32_t> _free;
+            volatile size_t _free_size;
         };
+
+        class Handle : public TC_Thread, public TC_ThreadLock
+        {
+
+        };
+
 
     public:
         TC_EpollServer::NetThread *getNetThread()
         {
             return _netThreads;
         }
-
-
 
     private:
         NetThread *_netThreads;
