@@ -57,7 +57,16 @@ namespace tars
 
         class Handle : public TC_Thread, public TC_ThreadLock
         {
+        public:
+            Handle();
+            virtual ~Handle();
 
+            virtual void run();
+            void setEpollServer(TC_EpollServer *eserv);
+
+        private:
+            TC_EpollServer *_pEpollServer;
+        protected:
         };
 
 

@@ -61,4 +61,21 @@ namespace tars
         std::cout << "epoll create successful" << std::endl;
     }
 
+    TC_EpollServer::Handle::Handle() {
+
+    }
+
+    TC_EpollServer::Handle::~Handle() {
+
+    }
+
+    void TC_EpollServer::Handle::run() {
+
+    }
+
+    void TC_EpollServer::Handle::setEpollServer(TC_EpollServer *eserv)
+    {
+        TC_ThreadLock::Lock lock(*this);
+        _pEpollServer = eserv;
+    }
 }
