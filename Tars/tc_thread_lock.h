@@ -7,39 +7,38 @@ namespace tars
     class TC_LockT
     {
     public:
+        TC_LockT(const T &mutex);
+        virtual ~TC_LockT();
 
     private:
+        const T &_mutex;
+
+        mutable bool _acquired;
     };
 
+    template<typename T>
+    TC_LockT<T>::TC_LockT(const T &mutex) : _mutex(mutex)
+    {
+        _mutex.lock();
+        _acquired = true;
+    }
+
+    template<typename T>
+    TC_LockT<T>::~TC_LockT() {
+
+    }
+
+    //--------
     template <typename T>
     class TC_TryLockT : public TC_LockT<T>
     {
     public:
+        TC_TryLockT();
+        virtual ~TC_TryLockT();
 
     private:
     };
 
-    class TC_ThreadCond;
-    class TC_ThreadMutex
-    {
-    public:
-        TC_ThreadMutex();
-        ~TC_ThreadMutex();
-
-    private:
-
-    protected:
-        virtual void run() = 0;
-    };
-
-    class TC_ThreadCond
-    {
-    public:
-        TC_ThreadCond();
-        ~TC_ThreadCond();
-
-    private:
-    };
 
 } //tars
 
