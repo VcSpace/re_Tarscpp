@@ -12,26 +12,12 @@ namespace tars
     class TC_ThreadControl
     {
     public:
-
         TC_ThreadControl();
-
         explicit TC_ThreadControl(pthread_t);
-
-        pthread_t id() const;
-
-        void join();
-
-        void detach();
-
-        static void sleep(long millsecond);
-
-        static void yield();
 
     private:
 
         pthread_t _thread;
-
-
     };
 
     class TC_Runable
@@ -47,7 +33,11 @@ namespace tars
         TC_Thread();
         virtual ~TC_Thread();
 
+
     private:
+
+    protected:
+        virtual void run() = 0;
     };
 
 

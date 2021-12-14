@@ -2,7 +2,6 @@
 
 namespace tars
 {
-
     TC_Thread::TC_Thread() {
 
     }
