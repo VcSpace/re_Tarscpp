@@ -23,6 +23,8 @@ int main(int argc, char **argv)
     vNetThread->createEpoll(1);
 
     tars::TC_EpollServer::Handle handle;
+    handle.setEpollServer(eserver);
+    handle.start();
 
     std::cout << "close server " << std::endl;
 
