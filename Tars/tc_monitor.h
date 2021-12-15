@@ -16,15 +16,27 @@ namespace tars
         TC_Monitor();
         virtual ~TC_Monitor();
 
-        virtual void lock() const;
+        void lock() const;
+        void trylock() const;
+        void unlock() const;
+
+        void wait() const;
+        bool timedWait(int millsecond) const;
+
+        void notify();
+        void notifyAll();
 
     private:
+        mutable int     _nnotify;
+        mutable U       _cond;
+        T               _mutex;
 
     };
+    typedef TC_Monitor<TC_ThreadMutex, TC_ThreadCond> TC_ThreadLock;
 
     template<typename T, typename U>
-    TC_Monitor<T, U>::TC_Monitor() {
-
+    TC_Monitor<T, U>::TC_Monitor() : _nnotify(0)
+    {
     }
 
     template<typename T, typename U>
@@ -37,7 +49,16 @@ namespace tars
 
     }
 
-    typedef TC_Monitor<TC_ThreadMutex, TC_ThreadCond> TC_ThreadLock;
+    template<typename T, typename U>
+    void TC_Monitor<T, U>::notifyAll() {
+
+    }
+
+    template<typename T, typename U>
+    void TC_Monitor<T, U>::wait() const {
+
+    }
+
 
 } //tars
 
