@@ -76,6 +76,7 @@ namespace tars
     void TC_EpollServer::Handle::setEpollServer(TC_EpollServer *eserv)
     {
         TC_ThreadLock::Lock lock(*this);
+        //std::cout << "class name = " << typeid(*this).name() << std::endl;
         _pEpollServer = eserv;
     }
 }

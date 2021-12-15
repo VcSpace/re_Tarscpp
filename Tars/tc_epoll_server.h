@@ -66,7 +66,10 @@ namespace tars
 
         private:
             TC_EpollServer *_pEpollServer;
+            int tmp = 10;
+
         protected:
+
         };
 
 
