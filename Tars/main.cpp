@@ -13,7 +13,7 @@ int main(int argc, char **argv)
         ip = argv[1];
         port = atoi(argv[2]);
     }
-    std::cout << "ReTars Start"<< std::endl;
+    std::cout << "-----------------\nReTars Start"<< std::endl;
     std::cout << "set ip = " << ip << "  " << "set port = " << port << std::endl;
 
     tars::TC_EpollServer *eserver = new tars::TC_EpollServer();
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     handle.setEpollServer(eserver);
     handle.start();
 
-    std::cout << "close server " << std::endl;
+    std::cout << "-----------------\nReTars Exit" << std::endl;
 
     return 0;
 }
