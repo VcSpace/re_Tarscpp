@@ -14,3 +14,6 @@ add_executable(${PROJECT_NAME}
         tc_ex.cpp
         main.cpp
         )
+
+#TARGET_LINK_LIBRARIES(${PROJECT_NAME} -pthread -lmysqlclient)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} -pthread)
