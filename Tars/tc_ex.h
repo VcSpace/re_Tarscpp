@@ -64,7 +64,7 @@ private:
     /**
      * 异常的相关信息
      */
-    string  _buffer;
+    std::string  _buffer;
 
     /**
      * 错误码
