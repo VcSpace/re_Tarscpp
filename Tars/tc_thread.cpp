@@ -103,10 +103,10 @@ TC_ThreadControl TC_Thread::start()
      *                  )
      */
     int ret = pthread_create(&_tid,
-                   0,
-                   (void *(*)(void *))&threadEntry,
-                   (void *)this
-                   );
+                        nullptr,
+                       (void *(*)(void *))&threadEntry,
+                       (void *)this
+                       );
 
     if(ret != 0)
     {
