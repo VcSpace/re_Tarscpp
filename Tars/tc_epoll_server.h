@@ -70,7 +70,7 @@ namespace tars
 
         protected:
 
-        };
+        }; //Handle
 
 
     public:
