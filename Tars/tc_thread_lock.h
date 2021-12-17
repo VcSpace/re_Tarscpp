@@ -26,8 +26,12 @@ namespace tars
     }
 
     template<typename T>
-    TC_LockT<T>::~TC_LockT() {
-
+    TC_LockT<T>::~TC_LockT()
+    {
+        if (_acquired)
+        {
+            _mutex.unlock();
+        }
     }
 
     //--------
