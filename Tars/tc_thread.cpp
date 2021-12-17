@@ -60,7 +60,7 @@ void TC_ThreadControl::yield()
     sched_yield();
 }
 
-TC_Thread::TC_Thread() : _running(false),_tid(-1)
+TC_Thread::TC_Thread() : _running(false), _tid(-1)
 {
 }
 
@@ -112,6 +112,8 @@ TC_ThreadControl TC_Thread::start()
     {
         throw TC_ThreadThreadControl_Exception("[TC_Thread::start] thread start error", ret);
     }
+
+    std::cout << "create thread" << std::endl;
 
     _lock.wait();
 

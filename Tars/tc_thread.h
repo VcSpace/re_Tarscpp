@@ -47,11 +47,9 @@ namespace tars
     {
     public:
         TC_Thread();
-
         virtual ~TC_Thread(){};
 
         TC_ThreadControl start();
-
         TC_ThreadControl getThreadControl() const;
 
         bool isAlive() const;
