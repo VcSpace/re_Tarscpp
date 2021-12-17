@@ -25,9 +25,28 @@ namespace tars
         TC_ThreadMutex();
         ~TC_ThreadMutex();
 
-    private:
+        void lock() const;
+        void unlock() const;
 
+        bool trylock() const;
+        bool willUnlock() const
+        {
+            return true;
+        }
+
+    private:
     protected:
+        // noncopyable
+        TC_ThreadMutex(const TC_ThreadMutex&);
+        void operator=(const TC_ThreadMutex&);
+
+        int count() const;
+        void count(int c) const;
+
+        friend class TC_ThreadCond;
+
+        mutable pthread_mutex_t _mutex;
+
     };
 
     class TC_ThreadCond
@@ -41,9 +60,6 @@ namespace tars
 
         template<typename Mutex>
         void wait(const Mutex &mutex) const;
-
-
-
 
     private:
     };
