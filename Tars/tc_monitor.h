@@ -19,12 +19,11 @@ namespace tars
         void lock() const;
         void trylock() const;
         void unlock() const;
-
         void wait() const;
-        bool timedWait(int millsecond) const;
-
         void notify();
         void notifyAll();
+
+        bool timedWait(int millsecond) const;
 
     private:
         mutable int     _nnotify;
@@ -45,18 +44,28 @@ namespace tars
     }
 
     template<typename T, typename U>
-    void TC_Monitor<T, U>::lock() const {
-
+    void TC_Monitor<T, U>::lock() const
+    {
+        _mutex.lock();
+        _nnotify = 0;
     }
 
     template<typename T, typename U>
-    void TC_Monitor<T, U>::notifyAll() {
-
+    void TC_Monitor<T, U>::notifyAll()
+    {
+        _nnotify = -1;
     }
 
     template<typename T, typename U>
     void TC_Monitor<T, U>::wait() const {
 
+    }
+
+    template<typename T, typename U>
+    void TC_Monitor<T, U>::unlock() const
+    {
+        //notifyImpl(_nnotify);
+        _mutex.unlock();
     }
 
 
