@@ -76,7 +76,7 @@ void TC_Thread::threadEntry(TC_Thread *pThread)
 
     try
     {
-        pThread->run();
+        pThread->run(); //???
     }
     catch(...)
     {
