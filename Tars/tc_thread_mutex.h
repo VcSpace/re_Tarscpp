@@ -6,6 +6,7 @@
 #include <mutex>
 #include <signal.h>
 #include <cstring>
+#include <cassert>
 
 #include "tc_ex.h"
 

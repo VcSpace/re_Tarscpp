@@ -54,6 +54,10 @@ namespace tars
 
     }
 
+    void TC_ThreadMutex::unlock() const {
+
+    }
+
     TC_ThreadCond::TC_ThreadCond() {
 
     }
