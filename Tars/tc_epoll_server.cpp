@@ -51,7 +51,7 @@ namespace tars
 
         _epoller.add(_bind_listen.getfd(), H64(ET_LISTEN) | _bind_listen.getfd(), EPOLLIN);
 
-        for(uint32_t i = 1; i <= _total; i++)
+        for(uint32_t i = 1; i <=_total; i++)
         {
             _free.push_back(i);
 
@@ -69,8 +69,10 @@ namespace tars
 
     }
 
-    void TC_EpollServer::Handle::run() {
-
+    void TC_EpollServer::Handle::run()
+    {
+        initialize();
+        handleImp();
     }
 
     void TC_EpollServer::Handle::setEpollServer(TC_EpollServer *eserv)
@@ -78,5 +80,20 @@ namespace tars
         TC_ThreadLock::Lock lock(*this);
         //std::cout << "class name = " << typeid(*this).name() << std::endl;
         _pEpollServer = eserv;
+    }
+
+    void TC_EpollServer::Handle::handleImp()
+    {
+        std::cout << "Handle::handleImp" << std::endl;
+        tagRecvData *recv = nullptr;
+        while(true)
+        {
+            {
+                TC_EpollServer::NetThread* netThread = _pEpollServer->getNetThread();
+                TC_ThreadLock::Lock lock(netThread->monitor);
+                netThread->monitor.timedWait(100);
+            }
+        }
+
     }
 }

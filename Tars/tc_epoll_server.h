@@ -14,6 +14,20 @@ namespace tars
 {
     class TC_EpollServer
     {
+        struct tagRecvData
+        {
+            uint32_t        uid;            /**连接标示*/
+            string          buffer;         /**需要发送的内容*/
+            string          ip;             /**远程连接的ip*/
+            uint16_t        port;           /**远程连接的端口*/
+            int64_t         recvTimeStamp;  /**接收到数据的时间*/
+            bool            isOverload;     /**是否已过载 */
+            bool            isClosed;       /**是否已关闭*/
+            int                fd;                /*保存产生该消息的fd，用于回包时选择网络线程*/
+            // BindAdapterPtr  adapter;        /**标识哪一个adapter的消息*/
+            int             closeType;     /*如果是关闭消息包，则标识关闭类型,0:表示客户端主动关闭；1:服务端主动关闭;2:连接超时服务端主动关闭*/
+        };
+
     public:
         TC_EpollServer();
         virtual ~TC_EpollServer();
@@ -41,6 +55,9 @@ namespace tars
             void bind(std::string &ip, int port);
             void createEpoll(uint32_t iIndex = 0);
 
+        public:
+            TC_ThreadLock               monitor;
+
         private:
             TC_EpollServer *_epollServer;
 
@@ -53,6 +70,7 @@ namespace tars
             std::map<int,int> _listen_connect_id;
             std::list<uint32_t> _free;
             volatile size_t _free_size;
+
         };
 
         class Handle : public TC_Thread, public TC_ThreadLock
@@ -64,11 +82,13 @@ namespace tars
             virtual void run();
             void setEpollServer(TC_EpollServer *eserv);
 
-        private:
+            virtual void initialize() {};
+
+        protected:
             TC_EpollServer *_pEpollServer;
             int tmp = 10;
 
-        protected:
+            virtual void handleImp();
 
         }; //Handle
 
