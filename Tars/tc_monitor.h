@@ -68,6 +68,27 @@ namespace tars
         _mutex.unlock();
     }
 
+    template<typename T, typename U>
+    bool TC_Monitor<T, U>::timedWait(int millsecond) const
+    {
+        //notifyImpl(_nnotify);
+
+        bool rc;
+
+        try
+        {
+            rc = _cond.timedWait(_mutex, millsecond);
+        }
+        catch(...)
+        {
+            _nnotify = 0;
+            throw;
+        }
+
+        _nnotify = 0;
+        return rc;
+    }
+
 
 } //tars
 
