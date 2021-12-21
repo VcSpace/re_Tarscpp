@@ -14,6 +14,7 @@ int main(int argc, char **argv)
         port = atoi(argv[2]);
     }
     std::cout << "-----------------\nReTars Start"<< std::endl;
+
     std::cout << "set ip = " << ip << "  " << "set port = " << port << std::endl;
 
     tars::TC_EpollServer *eserver = new tars::TC_EpollServer();
