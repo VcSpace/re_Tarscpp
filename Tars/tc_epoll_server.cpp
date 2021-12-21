@@ -4,6 +4,7 @@
 namespace tars
 {
 #define H64(x) (((uint64_t)x) << 32)
+
     TC_EpollServer::TC_EpollServer()
     {
         _netThreads = new TC_EpollServer::NetThread(this);
@@ -61,6 +62,22 @@ namespace tars
         std::cout << "epoll create successful" << std::endl;
     }
 
+    bool TC_EpollServer::NetThread::waitForRecvQueue(TC_EpollServer::tagRecvData *&recv, uint32_t iWaitTime)
+    {
+        std::cout << "NetThread::waitForRecvQueue" << std::endl;
+
+        bool bRet = false;
+
+        //bRet = _rbuffer.pop_front(recv, iWaitTime);
+
+        if(!bRet)
+        {
+            return bRet;
+        }
+
+        return bRet;
+    }
+
     TC_EpollServer::Handle::Handle() {
 
     }
@@ -93,7 +110,21 @@ namespace tars
                 TC_ThreadLock::Lock lock(netThread->monitor);
                 netThread->monitor.timedWait(100);
             }
+
+            while(waitForRecvQueue(recv, 0))
+            {
+                std::cout << "handleImp recv uid  is " << recv->uid << std::endl;
+                //_pEpollServer->send(recv->uid,recv->buffer, "0", 0, 0);
+
+            }
         }
 
+    }
+
+    bool TC_EpollServer::Handle::waitForRecvQueue(TC_EpollServer::tagRecvData *&recv, uint32_t iWaitTime)
+    {
+        TC_EpollServer::NetThread *pNetThread = _pEpollServer->getNetThread();
+
+        return pNetThread->waitForRecvQueue(recv, iWaitTime);
     }
 }
