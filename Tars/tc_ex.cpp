@@ -7,13 +7,13 @@
 namespace tars
 {
 
-TC_Exception::TC_Exception(const string &buffer)
+TC_Exception::TC_Exception(const std::string &buffer)
 :_buffer(buffer), _code(0)
 {
 //    getBacktrace();
 }
 
-TC_Exception::TC_Exception(const string &buffer, int err)
+TC_Exception::TC_Exception(const std::string &buffer, int err)
 {
     _buffer = buffer + " :" + strerror(err);
     _code   = err;
