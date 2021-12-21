@@ -11,8 +11,8 @@ namespace tars
 {
     struct TC_ThreadThreadControl_Exception : public TC_Exception
     {
-        TC_ThreadThreadControl_Exception(const string &buffer) : TC_Exception(buffer){};
-        TC_ThreadThreadControl_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
+        TC_ThreadThreadControl_Exception(const std::string &buffer) : TC_Exception(buffer){};
+        TC_ThreadThreadControl_Exception(const std::string &buffer, int err) : TC_Exception(buffer, err){};
         ~TC_ThreadThreadControl_Exception() throw() {};
     };
 
