@@ -59,10 +59,37 @@ namespace tars
         void signal();
         void broadcast();
 
+        timespec abstime(int millsecond) const;
+
         template<typename Mutex>
-        void wait(const Mutex &mutex) const;
+        void wait(const Mutex &mutex) const
+        {}
+
+        template<typename Mutex>
+        bool timedWait(const Mutex& mutex, int millsecond) const
+        {
+            int c = mutex.count();
+
+            timespec ts = abstime(millsecond);
+
+            int rc = pthread_cond_timedwait(&_cond, &mutex._mutex, &ts);
+
+            mutex.count(c);
+
+            if(rc != 0)
+            {
+                //cout<<"pthread_cond_timedwait rc is "<<rc<<endl;
+                if(rc != ETIMEDOUT)
+                {
+                    throw TC_ThreadCond_Exception("[TC_ThreadCond::timedWait] pthread_cond_timedwait error", errno);
+                }
+                return false;
+            }
+            return true;
+        }
 
     private:
+        mutable pthread_cond_t _cond;
     };
 
 } //tars
