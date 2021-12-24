@@ -69,8 +69,11 @@ namespace tars
             void createEpoll(uint32_t iIndex = 0);
             void insertRecvQueue(const recv_queue::queue_type &vtRecvData,bool bPushBack = true);
             void send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port);
+            void run();
 
             bool waitForRecvQueue(tagRecvData* &recv, uint32_t iWaitTime);
+
+            int accept(int fd);
 
         public:
             TC_ThreadLock               monitor;
@@ -119,6 +122,8 @@ namespace tars
         {
             return _netThreads;
         }
+
+        void send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port, int fd);
 
     private:
         NetThread *_netThreads;

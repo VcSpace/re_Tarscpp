@@ -14,6 +14,11 @@ namespace tars
 
     }
 
+    void TC_EpollServer::send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port, int fd)
+    {
+        _netThreads->send(uid, s, ip, port);
+    }
+
     TC_EpollServer::NetThread::NetThread(TC_EpollServer *epollServer) : _epollServer(epollServer)
     {
         _shutdown.createsock();
@@ -68,7 +73,7 @@ namespace tars
 
         bool bRet = false;
 
-        //bRet = _rbuffer.pop_front(recv, iWaitTime);
+        bRet = _rbuffer.pop_front(recv, iWaitTime);
 
         if(!bRet)
         {
@@ -76,6 +81,134 @@ namespace tars
         }
 
         return bRet;
+    }
+
+    void TC_EpollServer::NetThread::send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port)
+    {
+        tagSendData* send = new tagSendData();
+
+        send->uid = uid;
+
+        send->cmd = 's';
+
+        send->buffer = s;
+
+        send->ip = ip;
+
+        send->port = port;
+
+        _sbuffer.push_back(send);
+
+        //通知epoll响应, 有数据要发送
+        _epoller.mod(_notify.getfd(), H64(ET_NOTIFY), EPOLLOUT);
+    }
+
+    void TC_EpollServer::NetThread::run()
+    {
+        std::cout << "NetThread run" << std::endl;
+
+        while(true)
+        {
+            int iEvNum = _epoller.wait(2000);
+
+            for(int i = 0; i < iEvNum; ++i)
+            {
+                const epoll_event &ev = _epoller.get(i);
+
+                uint32_t h = ev.data.u64 >> 32;
+
+                switch(h)
+                {
+                    case ET_LISTEN:
+                        std::cout << "ET_LISTEN" << std::endl;
+                        {
+                            if(ev.events & EPOLLIN)
+                            {
+                                bool ret;
+                                do
+                                {
+                                    ret = accept(ev.data.u32);
+                                }while(ret);
+                            }
+                        }
+                        break;
+                    case ET_CLOSE:
+                        std::cout << "ET_CLOSE" << std::endl;
+                        break;
+                    case ET_NOTIFY:
+                        std::cout << "ET_NOTIFY" << std::endl;
+                        //processPipe();
+                        break;
+                    case ET_NET:
+                        std::cout << "ET_NET" << std::endl;
+                        //processNet(ev);
+                        break;
+                    default:
+                        assert(true);
+                }
+            }
+        }
+    }
+
+    int TC_EpollServer::NetThread::accept(int fd)
+    {
+        struct sockaddr_in stSockAddr;
+
+        socklen_t iSockAddrSize = sizeof(sockaddr_in);
+
+        TC_Socket cs;
+        cs.setOwner(false);
+
+        //接收连接
+        TC_Socket s;
+        s.init(fd, false, AF_INET);
+
+        int iRetCode = s.accept(cs, (struct sockaddr *) &stSockAddr, iSockAddrSize);
+
+        if (iRetCode > 0)
+        {
+            std::string  ip;
+
+            uint16_t port;
+
+            char sAddr[INET_ADDRSTRLEN] = "\0";
+
+            struct sockaddr_in *p = (struct sockaddr_in *)&stSockAddr;
+
+            inet_ntop(AF_INET, &p->sin_addr, sAddr, sizeof(sAddr));
+
+            ip      = sAddr;
+            port    = ntohs(p->sin_port);
+
+            std::cout << "accept ip is " << ip << " port is " << port << std::endl;
+
+            cs.setblock(false);
+            cs.setKeepAlive();
+            cs.setTcpNoDelay();
+            cs.setCloseWaitDefault();
+
+            uint32_t uid = _free.front();
+
+            _free.pop_front();
+
+            --_free_size;
+
+            _listen_connect_id[uid] = cs.getfd();
+
+            std::cout << "server accept successful fd is " << cs.getfd() << std::endl;
+
+            _epoller.add(cs.getfd(), uid, EPOLLIN | EPOLLOUT);
+
+        }
+        else
+        {
+            if(errno == EAGAIN)
+            {
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
 
     TC_EpollServer::Handle::Handle() {
@@ -114,7 +247,7 @@ namespace tars
             while(waitForRecvQueue(recv, 0))
             {
                 std::cout << "handleImp recv uid  is " << recv->uid << std::endl;
-                //_pEpollServer->send(recv->uid,recv->buffer, "0", 0, 0);
+                _pEpollServer->send(recv->uid,recv->buffer, "0", 0, 0);
 
             }
         }
