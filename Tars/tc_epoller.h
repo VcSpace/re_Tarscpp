@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
+#include <cassert>
 
 namespace tars
 {
@@ -42,8 +43,15 @@ namespace tars
          */
         void del(int fd, long long data, __uint32_t event);
 
-        void ctrl(int fd, long long int data, __uint32_t events, int mode);
+        int wait(int millsecond);
+        struct epoll_event& get(int i)
+        {
+            assert(_pevs != 0);
+            return _pevs[i];
+        }
 
+    protected:
+        void ctrl(int fd, long long int data, __uint32_t events, int mode);
 
     private:
         bool _et;
@@ -53,6 +61,6 @@ namespace tars
 
         struct epoll_event *_pevs;
     };
-}
+} //tars
 
 #endif //RETARS_TC_EPOLLER_H
