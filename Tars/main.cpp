@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     }
     std::cout << "-----------------\nReTars Start"<< std::endl;
 
-    std::cout << "set ip = " << ip << "  " << "set port = " << port << std::endl;
+    //std::cout << "set ip = " << ip << "  " << "set port = " << port << std::endl;
 
     tars::TC_EpollServer *eserver = new tars::TC_EpollServer();
     tars::TC_EpollServer::NetThread* vNetThread = eserver->getNetThread();
@@ -26,6 +26,8 @@ int main(int argc, char **argv)
     tars::TC_EpollServer::Handle handle;
     handle.setEpollServer(eserver);
     handle.start();
+
+    vNetThread->run();
 
     std::cout << "-----------------\nReTars Exit" << std::endl;
 
