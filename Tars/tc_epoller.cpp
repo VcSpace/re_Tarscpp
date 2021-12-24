@@ -1,5 +1,7 @@
 #include "tc_epoller.h"
 
+#include <iostream>
+
 namespace tars
 {
     TC_Epoller::TC_Epoller(bool et) : _et(et), _iEpollfd(0), _max_connections(1024), _pevs(nullptr)
@@ -62,6 +64,13 @@ namespace tars
 
         epoll_ctl(_iEpollfd, mode, fd, &ev);
     }
+
+    int TC_Epoller::wait(int millsecond)
+    {
+        std::cout << "epoll_waiting " << std::endl;
+        return epoll_wait(_iEpollfd, _pevs, _max_connections + 1, millsecond);
+    }
+
 
 } //tars
 
