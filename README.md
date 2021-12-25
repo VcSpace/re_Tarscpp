@@ -1,5 +1,7 @@
 # Re-tarscpp
 
+![https://img.shields.io/github/workflow/status/VcSpace/re_Tarscpp/CMake](https://img.shields.io/github/workflow/status/VcSpace/re_Tarscpp/CMake)
+
 看看Tars
 
 ---
