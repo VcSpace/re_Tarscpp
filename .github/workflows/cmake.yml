@@ -22,13 +22,13 @@ jobs:
     
     - name: cd
       # Build your program with the given configuration
-      run: ls && cd Tars
+      run: ls
       
     - name: build
-      run: cmake ./
+      run: cmake ./Tars
       
     - name: make
-      run: make check
+      run: cd Tars && make check
            
            
 
