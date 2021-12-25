@@ -25,6 +25,27 @@ namespace tars
 
         bool timedWait(int millsecond) const;
 
+    protected:
+        void notifyImpl(int nnotify) const
+        {
+            if(nnotify != 0)
+            {
+                if(nnotify == -1)
+                {
+                    _cond.broadcast();
+                    return;
+                }
+                else
+                {
+                    while(nnotify > 0)
+                    {
+                        _cond.signal();
+                        --nnotify;
+                    }
+                }
+            }
+        }
+        
     private:
         mutable int     _nnotify;
         mutable U       _cond;
@@ -57,8 +78,21 @@ namespace tars
     }
 
     template<typename T, typename U>
-    void TC_Monitor<T, U>::wait() const {
+    void TC_Monitor<T, U>::wait() const
+    {
+        notifyImpl(_nnotify);
 
+        try
+        {
+            _cond.wait(_mutex);
+        }
+        catch(...)
+        {
+            _nnotify = 0;
+            throw;
+        }
+
+        _nnotify = 0;
     }
 
     template<typename T, typename U>

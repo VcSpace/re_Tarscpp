@@ -23,6 +23,7 @@ namespace tars
         void push_back(const queue_type &qt);
         void push_front(const T& t);
         void push_front(const queue_type &qt);
+        bool swap(queue_type &q, size_t millsecond = 0);
 
         bool pop_front(T& t, size_t millsecond = 0);
 
@@ -76,6 +77,43 @@ namespace tars
     template<typename T, typename D>
     void TC_ThreadQueue<T, D>::push_back(const T &t) {
 
+    }
+
+    template<typename T, typename D>
+    bool TC_ThreadQueue<T, D>::swap(queue_type &q, size_t millsecond)
+    {
+        Lock lock(*this);
+
+        if (_queue.empty())
+        {
+            if(millsecond == 0)
+            {
+                return false;
+            }
+            if(millsecond == (size_t)-1)
+            {
+                wait();
+            }
+            else
+            {
+                //超时了
+                if(!timedWait(millsecond))
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (_queue.empty())
+        {
+            return false;
+        }
+
+        q.swap(_queue);
+        //_size = q.size();
+        _size = _queue.size();
+
+        return true;
     }
 
 } //tars
