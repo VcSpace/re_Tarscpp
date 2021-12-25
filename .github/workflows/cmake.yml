@@ -19,14 +19,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    
     - name: cd
       # Build your program with the given configuration
-      run: cd Tars
+      run: ls && cd Tars
+      
     - name: build
-      run: cmake .
+      run: cmake ./
+      
     - name: make
-      run: make
+      run: make check
            
            
 
