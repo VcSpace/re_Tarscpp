@@ -28,7 +28,7 @@ jobs:
       run: cmake ./Tars
       
     - name: make
-      run: cd Tars && make check
+      run: make
            
            
 
