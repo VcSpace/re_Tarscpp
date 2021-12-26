@@ -69,7 +69,7 @@ namespace tars
 
     bool TC_EpollServer::NetThread::waitForRecvQueue(TC_EpollServer::tagRecvData *&recv, uint32_t iWaitTime)
     {
-        std::cout << "NetThread::waitForRecvQueue" << std::endl;
+//        std::cout << "NetThread::waitForRecvQueue" << std::endl;
 
         bool bRet = false;
 
@@ -137,11 +137,11 @@ namespace tars
                         break;
                     case ET_NOTIFY:
                         std::cout << "ET_NOTIFY" << std::endl;
-                        //processPipe();
+                        processPipe();
                         break;
                     case ET_NET:
                         std::cout << "ET_NET" << std::endl;
-                        //processNet(ev);
+                        processNet(ev);
                         break;
                     default:
                         assert(true);
@@ -211,6 +211,128 @@ namespace tars
         return true;
     }
 
+    void TC_EpollServer::NetThread::processPipe()
+    {
+        send_queue::queue_type deSendData;
+        _sbuffer.swap(deSendData);
+        send_queue::queue_type::iterator it = deSendData.begin();
+        send_queue::queue_type::iterator itEnd = deSendData.end();
+
+        while(it != itEnd)
+        {
+            switch((*it)->cmd)
+            {
+                case 's':
+                {
+                    uint32_t uid = (*it)->uid;
+
+                    int fd = _listen_connect_id[uid];
+
+                    std::cout << "processPipe uid is " << uid << " fd is " << fd << std::endl;
+
+                    int bytes = ::send(fd, (*it)->buffer.c_str(), (*it)->buffer.size(), 0);
+
+                    std::cout << "send byte is " << bytes << std::endl;
+
+                    break;
+                }
+                default:
+                    assert(false);
+            }
+            delete(*it);
+            ++it;
+        }
+    }
+
+    void TC_EpollServer::NetThread::processNet(const epoll_event &ev) {
+        uint32_t uid = ev.data.u32;
+        int fd = _listen_connect_id[uid];
+        std::cout << "processNet uid is " << uid << " fd is " << fd << std::endl;
+
+        if (ev.events & EPOLLERR || ev.events & EPOLLHUP) {
+            std::cout << "should delet connection" << std::endl;
+            return;
+        }
+
+        if (ev.events & EPOLLIN)
+        {
+            recv_queue::queue_type vRecvData;
+
+            while(true)
+            {
+                char buffer[32*1024];
+                int iBytesReceived = 0;
+
+                iBytesReceived = ::read(fd, (void*)buffer, sizeof(buffer));
+                std::cout << "server recieve " << iBytesReceived << " bytes buffer is " << buffer << std::endl;
+
+                if(iBytesReceived < 0)
+                {
+                    if(errno == EAGAIN)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        std::cout << "client close" << std::endl;
+                        return ;
+                    }
+                }
+                else if( iBytesReceived == 0 )
+                {
+                    std::cout << "1 client close" << std::endl;
+                    return ;
+                }
+
+                _recvbuffer.append(buffer, iBytesReceived);
+            }
+            if(!_recvbuffer.empty())
+            {
+                tagRecvData* recv = new tagRecvData();
+                recv->buffer           = std::move(_recvbuffer);
+                recv->ip               = "";
+                recv->port             = 0;
+                recv->recvTimeStamp    = 0;
+                recv->uid              = uid;
+                recv->isOverload       = false;
+                recv->isClosed         = false;
+                recv->fd               = fd;
+
+                vRecvData.push_back(recv);
+            }
+
+            if(!vRecvData.empty())
+            {
+                std::cout << "insertRecvQueue" << std::endl;
+                insertRecvQueue(vRecvData);
+            }
+        }
+
+        if (ev.events & EPOLLOUT)
+        {
+            std::cout<< "need to send data" << std::endl;
+        }
+
+    }
+
+    void TC_EpollServer::NetThread::insertRecvQueue(const std::deque<TC_EpollServer::tagRecvData *> &vtRecvData, bool bPushBack)
+    {
+        {
+            if (bPushBack)
+            {
+                _rbuffer.push_back(vtRecvData);
+            }
+            else
+            {
+                _rbuffer.push_front(vtRecvData);
+            }
+        }
+
+        TC_ThreadLock::Lock lock(monitor);
+
+        monitor.notify();
+    }
+
     TC_EpollServer::Handle::Handle() {
 
     }
@@ -221,6 +343,8 @@ namespace tars
 
     void TC_EpollServer::Handle::run()
     {
+        std::cout << "handle run" << std::endl;
+
         initialize();
         handleImp();
     }

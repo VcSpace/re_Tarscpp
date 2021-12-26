@@ -8,7 +8,7 @@
 #include "tc_socket.h"
 #include "tc_epoller.h"
 #include "tc_thread.h"
-#include "tc_thread_queue.h"
+#include "tc_thread_queue.hpp"
 
 namespace tars
 {
@@ -70,6 +70,8 @@ namespace tars
             void insertRecvQueue(const recv_queue::queue_type &vtRecvData,bool bPushBack = true);
             void send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port);
             void run();
+            void processNet(const epoll_event &ev);
+            void processPipe();
 
             bool waitForRecvQueue(tagRecvData* &recv, uint32_t iWaitTime);
 
@@ -91,6 +93,9 @@ namespace tars
 
             std::map<int,int> _listen_connect_id;
             std::list<uint32_t> _free;
+
+            std::string _recvbuffer;;
+
             volatile size_t _free_size;
 
         };
