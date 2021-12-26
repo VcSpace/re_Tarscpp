@@ -67,7 +67,6 @@ namespace tars
 
     int TC_Epoller::wait(int millsecond)
     {
-        std::cout << "epoll_waiting " << std::endl;
         return epoll_wait(_iEpollfd, _pevs, _max_connections + 1, millsecond);
     }
 
