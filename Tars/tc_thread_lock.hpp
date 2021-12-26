@@ -1,5 +1,7 @@
-#ifndef RETARS_TC_THREAD_LOCK_H
-#define RETARS_TC_THREAD_LOCK_H
+#ifndef RETARS_TC_THREAD_LOCK_HPP
+#define RETARS_TC_THREAD_LOCK_HPP
+
+#include <iostream>
 
 namespace tars
 {
@@ -19,8 +21,9 @@ namespace tars
     template<typename T>
     TC_LockT<T>::TC_LockT(const T &mutex) : _mutex(mutex)
     {
-        //std::cout << "1class name = " << typeid(mutex).name() << std::endl;
-        //std::cout << "2class name = " << typeid(*this).name() << std::endl;
+
+//        std::cout << "1class name = " << typeid(mutex).name() << std::endl;
+//        std::cout << "2class name = " << typeid(*this).name() << std::endl;
         _mutex.lock();
         _acquired = true;
     }
@@ -49,4 +52,4 @@ namespace tars
 } //tars
 
 
-#endif //RETARS_TC_THREAD_LOCK_H
+#endif //RETARS_TC_THREAD_LOCK_HPP
