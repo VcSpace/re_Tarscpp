@@ -58,8 +58,13 @@ namespace tars
 
     }
 
-    void TC_ThreadMutex::unlock() const {
-
+    void TC_ThreadMutex::unlock() const
+    {
+        int rc = pthread_mutex_unlock(&_mutex);
+        if(rc != 0)
+        {
+            std::cout << "[TC_ThreadMutex::unlock] pthread_mutex_unlock error" << rc << std::endl;
+        }
     }
 
     int TC_ThreadMutex::count() const
@@ -122,5 +127,23 @@ namespace tars
         ts.tv_nsec  = tv.tv_usec * 1000;
 
         return ts;
+    }
+
+    void TC_ThreadCond::signal()
+    {
+        int rc = pthread_cond_signal(&_cond);
+        if(rc != 0)
+        {
+            throw TC_ThreadCond_Exception("[TC_ThreadCond::signal] pthread_cond_signal error", errno);
+        }
+    }
+
+    void TC_ThreadCond::broadcast()
+    {
+        int rc = pthread_cond_broadcast(&_cond);
+        if(rc != 0)
+        {
+            throw TC_ThreadCond_Exception("[TC_ThreadCond::broadcast] pthread_cond_broadcast error", errno);
+        }
     }
 } //tars
