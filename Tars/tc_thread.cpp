@@ -107,7 +107,6 @@ namespace tars
                                  (void *(*)(void *))&threadEntry,
                                  (void *)this
         );
-        sleep(3);
 
         if(ret != 0)
         {
