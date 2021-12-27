@@ -11,7 +11,7 @@ namespace tars
     }
     TC_EpollServer::~TC_EpollServer()
     {
-
+        delete _netThreads;
     }
 
     void TC_EpollServer::send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port, int fd)

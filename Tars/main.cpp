@@ -30,6 +30,7 @@ int main(int argc, char **argv)
     vNetThread->run();
 
     std::cout << "-----------------\nReTars Exit" << std::endl;
+    delete eserver;
 
     return 0;
 }
