@@ -19,6 +19,13 @@ namespace tars
         _netThreads->send(uid, s, ip, port);
     }
 
+    int TC_EpollServer::bind(TC_EpollServer::BindAdapterPtr &lsPtr)
+    {
+        int ret = 0;
+        ret = _netThreads->bind(lsPtr);
+        return ret;
+    }
+
     TC_EpollServer::NetThread::NetThread(TC_EpollServer *epollServer) : _epollServer(epollServer)
     {
         _shutdown.createsock();
@@ -331,6 +338,17 @@ namespace tars
         TC_ThreadLock::Lock lock(monitor);
 
         monitor.notify();
+    }
+
+    int TC_EpollServer::NetThread::bind(TC_EpollServer::BindAdapterPtr &lsPtr)
+    {
+        const TC_Endpoint &ep = lsPtr->getEndpoint();
+
+    }
+
+    TC_Endpoint TC_EpollServer::BindAdapter::getEndpoint() const
+    {
+
     }
 
     TC_EpollServer::Handle::Handle() {
