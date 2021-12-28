@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
         tc_thread.cpp
         tc_thread_mutex.cpp
         tc_ex.cpp
+        tc_clientsocket.cpp
         main.cpp
         )
 
