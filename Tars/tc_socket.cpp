@@ -14,7 +14,7 @@ namespace tars
 
     }
 
-    void TC_Socket::createsock(int Domain, int type)
+    void TC_Socket::createSocket(int Domain, int type)
     {
         assert(type == SOCK_STREAM || type == SOCK_DGRAM);
 

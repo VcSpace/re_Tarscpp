@@ -20,7 +20,7 @@ namespace tars
         TC_Socket();
         virtual ~TC_Socket();
 
-        void createsock(int Domain = AF_INET, int type = SOCK_STREAM);
+        void createSocket(int Domain = AF_INET, int type = SOCK_STREAM);
         void bind(const std::string &ip, int port);
         void bind(struct sockaddr *s_addr, socklen_t s_addr_len);
         void parseaddr(const std::string &ip, struct in_addr &s_addr);
