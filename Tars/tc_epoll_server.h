@@ -18,9 +18,13 @@ namespace tars
     {
     public:
         class NetThread;
-        class BindAdapter;
 
+        class BindAdapter;
         typedef std::shared_ptr<BindAdapter> BindAdapterPtr;
+
+        class Handle;
+        typedef std::shared_ptr<Handle> HandlePtr;
+
         struct tagRecvData
         {
             uint32_t        uid;            /**连接标示*/
@@ -73,7 +77,7 @@ namespace tars
             NetThread(TC_EpollServer *epollServer);
             virtual ~NetThread();
 
-            void bind(std::string &ip, int port);
+//            void bind(std::string &ip, int port);
             void createEpoll(uint32_t iIndex = 0);
             void insertRecvQueue(const recv_queue::queue_type &vtRecvData,bool bPushBack = true);
             void send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port);
@@ -85,11 +89,13 @@ namespace tars
 
             int accept(int fd);
             int bind(BindAdapterPtr &lsPtr);
+            void bind(const TC_Endpoint &ep, TC_Socket &s);
 
         public:
             TC_ThreadLock               monitor;
             TC_EpollServer *_epollServer;
             TC_Epoller _epoller;
+
 
             TC_Socket _shutdown;
             TC_Socket _notify;
@@ -99,6 +105,7 @@ namespace tars
             send_queue                 _sbuffer;
 
             std::map<int,int> _listen_connect_id;
+            std::map<int, BindAdapterPtr> _listeners;
             std::list<uint32_t> _free;
 
             std::string _recvbuffer;;
@@ -177,7 +184,7 @@ namespace tars
         }
 
         void send(unsigned int uid, const std::string &s, const std::string &ip, uint16_t port, int fd);
-        int  bind(TC_EpollServer::BindAdapterPtr &lsPtr);
+        int bind(TC_EpollServer::BindAdapterPtr &lsPtr);
 
     private:
         NetThread *_netThreads;

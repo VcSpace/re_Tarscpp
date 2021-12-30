@@ -28,8 +28,8 @@ namespace tars
 
     TC_EpollServer::NetThread::NetThread(TC_EpollServer *epollServer) : _epollServer(epollServer)
     {
-        _shutdown.createsock();
-        _notify.createsock();
+        _shutdown.createSocket();
+        _notify.createSocket();
 
         _response.response="";
         _response.uid = 0;
@@ -37,21 +37,21 @@ namespace tars
 
     TC_EpollServer::NetThread::~NetThread() {}
 
-    void TC_EpollServer::NetThread::bind(std::string &ip, int port)
-    {
-        int Domain = AF_INET;
-        int type = SOCK_STREAM;
-        _bind_listen.createsock(Domain, type);
-        _bind_listen.bind(ip, port);
-        _bind_listen.listen(1024);
-
-        std::cout << "server alreay listen fd is " << _bind_listen.getfd() << std::endl;
-
-        _bind_listen.setKeepAlive();
-        _bind_listen.setTcpNoDelay();
-        _bind_listen.setNoCloseWait();
-        _bind_listen.setblock(false);
-    }
+//    void TC_EpollServer::NetThread::bind(std::string &ip, int port)
+//    {
+//        int Domain = AF_INET;
+//        int type = SOCK_STREAM;
+//        _bind_listen.createsock(Domain, type);
+//        _bind_listen.bind(ip, port);
+//        _bind_listen.listen(1024);
+//
+//        std::cout << "server alreay listen fd is " << _bind_listen.getfd() << std::endl;
+//
+//        _bind_listen.setKeepAlive();
+//        _bind_listen.setTcpNoDelay();
+//        _bind_listen.setNoCloseWait();
+//        _bind_listen.setblock(false);
+//    }
 
     void TC_EpollServer::NetThread::createEpoll(uint32_t iIndex)
     {
@@ -64,10 +64,14 @@ namespace tars
 
         _epoller.add(_bind_listen.getfd(), H64(ET_LISTEN) | _bind_listen.getfd(), EPOLLIN);
 
+        for (const auto& kv : _listeners)
+        {
+            _epoller.add(kv.first, H64(ET_LISTEN) | kv.first, EPOLLIN);
+        }
+
         for(uint32_t i = 1; i <=_total; i++)
         {
             _free.push_back(i);
-
             ++_free_size;
         }
 
@@ -257,7 +261,7 @@ namespace tars
         std::cout << "processNet uid is " << uid << " fd is " << fd << std::endl;
 
         if (ev.events & EPOLLERR || ev.events & EPOLLHUP) {
-            std::cout << "should delet connection" << std::endl;
+            std::cout << "should delete connection" << std::endl;
             return;
         }
 
@@ -344,10 +348,54 @@ namespace tars
     {
         const TC_Endpoint &ep = lsPtr->getEndpoint();
 
+        TC_Socket& s = lsPtr->getSocket();
+
+        bind(ep, s);
+
+        _listeners[s.getfd()] = lsPtr;
+
+        return s.getfd();
+    }
+
+    void TC_EpollServer::NetThread::bind(const TC_Endpoint &ep, TC_Socket &s)
+    {
+        int type = AF_INET;
+
+        s.createSocket(SOCK_STREAM, type);
+
+        s.bind(ep.getHost(), ep.getPort());
+
+        s.listen(1024);
+        s.setKeepAlive();
+        s.setTcpNoDelay();
+        //不要设置close wait否则http服务回包主动关闭连接会有问题
+        s.setNoCloseWait();
+
+        s.setblock(false);
     }
 
     TC_Endpoint TC_EpollServer::BindAdapter::getEndpoint() const
     {
+        return _ep;
+    }
+
+    void TC_EpollServer::BindAdapter::setEndpoint(const std::string &str, const int &port)
+    {
+        TC_ThreadLock::Lock lock(*this);
+        _ep.init(str, port);
+    }
+
+    TC_Socket &TC_EpollServer::BindAdapter::getSocket()
+    {
+        return _s;
+    }
+
+    TC_EpollServer::BindAdapter::BindAdapter(TC_EpollServer *pEpollServer) :_pEpollServer(pEpollServer)
+    {
+
+    }
+
+    TC_EpollServer::BindAdapter::~BindAdapter() {
 
     }
 
