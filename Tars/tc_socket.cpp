@@ -71,7 +71,7 @@ namespace tars
 
         if(::bind(_sock, s_addr, s_addr_len))
         {
-            std::cout << "[TC_Socket::bind] bind error" << std::endl;
+            std::cout << "[TC_Socket::bind] bind error2" << std::endl;
         }
     }
 
