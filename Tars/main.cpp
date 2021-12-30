@@ -21,16 +21,16 @@ int main(int argc, char **argv)
     tars::TC_EpollServer::NetThread* vNetThread = _epollServer->getNetThread();
 
     tars::TC_EpollServer::BindAdapterPtr lsPtr = std::make_shared<tars::TC_EpollServer::BindAdapter>(_epollServer.get());
-    //lsPtr->setEndpoint(ip,port);
+    lsPtr->setEndpoint(ip,port);
+    _epollServer->bind(lsPtr);
 
-//    //vNetThread->bind(ip,port);
-//    vNetThread->createEpoll(1);
-//
-//    tars::TC_EpollServer::Handle handle;
-//    handle.setEpollServer(_epollServer.get());
-//    handle.start();
-//
-//    vNetThread->run();
+    vNetThread->createEpoll(1);
+
+    tars::TC_EpollServer::Handle handle;
+    handle.setEpollServer(_epollServer.get());
+    handle.start();
+
+    vNetThread->run();
 
     std::cout << "-----------------\nReTars Exit" << std::endl;
 
