@@ -16,10 +16,27 @@ namespace tars
     class TC_Endpoint
     {
     public:
+        TC_Endpoint();
+        TC_Endpoint(const std::string &str, int port);
+        ~TC_Endpoint();
+
+        void init(const std::string &str, int port);
+
+        std::string getHost() const
+        {
+            return _host;
+        }
+
+        int getPort() const
+        {
+            return _port;
+        }
 
     private:
 
     protected:
+        std::string _host;
+        int _port;
 
     };
 } //tars
