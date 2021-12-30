@@ -54,7 +54,7 @@ namespace tars
 
     public:
         TC_EpollServer();
-        virtual ~TC_EpollServer();
+        ~TC_EpollServer();
 
     public:
         class NetThread
@@ -128,10 +128,12 @@ namespace tars
 
         protected:
             TC_EpollServer *_pEpollServer;
+
             int tmp = 10;
 
-            virtual void handleImp();
+            uint32_t  _iWaitTime;
 
+            virtual void handleImp();
         }; //Handle
 
         class BindAdapter : public TC_ThreadLock
@@ -144,7 +146,7 @@ namespace tars
 
             ~BindAdapter();
 
-            void setEndpoint(const std::string &str,const int &port);
+            void setEndpoint(const std::string &str, const int &port);
 
             TC_Endpoint getEndpoint() const;
 

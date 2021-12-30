@@ -9,6 +9,7 @@ namespace tars
     {
         _netThreads = new TC_EpollServer::NetThread(this);
     }
+
     TC_EpollServer::~TC_EpollServer()
     {
         delete _netThreads;
@@ -35,7 +36,9 @@ namespace tars
         _response.uid = 0;
     }
 
-    TC_EpollServer::NetThread::~NetThread() {}
+    TC_EpollServer::NetThread::~NetThread()
+    {
+    }
 
 //    void TC_EpollServer::NetThread::bind(std::string &ip, int port)
 //    {
@@ -361,7 +364,7 @@ namespace tars
     {
         int type = AF_INET;
 
-        s.createSocket(SOCK_STREAM, type);
+        s.createSocket(type, SOCK_STREAM);
 
         s.bind(ep.getHost(), ep.getPort());
 
@@ -399,7 +402,8 @@ namespace tars
 
     }
 
-    TC_EpollServer::Handle::Handle() {
+    TC_EpollServer::Handle::Handle() : _pEpollServer(NULL), _iWaitTime(100)
+    {
 
     }
 
