@@ -139,7 +139,7 @@ namespace tars
         class BindAdapter : public TC_ThreadLock
         {
         public:
-
+            //接管了原NetThread中的int bind(string& ip, int& port);
             BindAdapter(){}
 
             BindAdapter(TC_EpollServer *pEpollServer);
