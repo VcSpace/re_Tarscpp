@@ -440,6 +440,7 @@ namespace tars
 
             while(waitForRecvQueue(recv, 0))
             {
+                std::cout << "Handle thread id is " << id() << std::endl;
                 std::cout << "handleImp recv uid  is " << recv->uid << std::endl;
                 _pEpollServer->send(recv->uid,recv->buffer, "0", 0, 0);
 
