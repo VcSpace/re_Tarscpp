@@ -26,9 +26,20 @@ int main(int argc, char **argv)
 
     vNetThread->createEpoll(1);
 
-    tars::TC_EpollServer::Handle handle;
-    handle.setEpollServer(_epollServer.get());
-    handle.start();
+    std::vector<tars::TC_EpollServer::HandlePtr> handles;
+    int handleNum = 4;
+
+    for (int32_t i = 0; i < handleNum; ++i)
+    {
+        tars::TC_EpollServer::HandlePtr handle = std::make_shared<tars::TC_EpollServer::Handle>();
+        handle->setEpollServer(_epollServer.get());
+        handles.push_back(handle);
+    }
+
+    for(auto& handle : handles)
+    {
+        handle->start();
+    }
 
     vNetThread->run();
 
