@@ -13,6 +13,7 @@ namespace tars
         ~TC_EndpointParse_Exception() throw() {};
     };
 
+    //接管了原NetThread中的int bind(string& ip, int& port);
     class TC_Endpoint
     {
     public:
