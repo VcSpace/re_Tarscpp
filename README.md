@@ -11,17 +11,17 @@
 
 **架构**
 
-![f](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-18429215ed75f04b9f18906d0a4bf607dc5b297f%2Ftars_tuopu.png?alt=media)
+![f](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-18429215ed75f04b9f18906d0a4bf607dc5b297f%2Ftars_tuopu.png)
 
 **交互**
 
-![c](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-86462d5e2cce743a866d04c4dcfddde92338f908%2Ftars_jiaohu.png?alt=media)
+![c](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-86462d5e2cce743a866d04c4dcfddde92338f908%2Ftars_jiaohu.png)
 
 ---
 
 **服务架构**
 
-![sf](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-e380cf1ce5fde20fa2ac6cf71322bdf1507ca200%2Ftars_server_client%20(1).png?alt=media)
+![sf](https://tarscloud.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-LjKWVpRE8j8fOTPPSus%2Fuploads%2Fgit-blob-e380cf1ce5fde20fa2ac6cf71322bdf1507ca200%2Ftars_server_client%20(1).png)
 
 ```
 服务端：
